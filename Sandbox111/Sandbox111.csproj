@@ -22,12 +22,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Add-ServiceLogonRight.ps1" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Create-WindowsService.ps1" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Make sure the project gets rebuilt if important content file(s) change. -->
-    <UpToDateCheckInput Include="Create-WindowsService.ps1"/>
+    <UpToDateCheckInput Include=".\**\*.ps1"/>
   </ItemGroup>
 
 </Project>
