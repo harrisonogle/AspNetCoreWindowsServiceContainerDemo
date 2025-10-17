@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Sandbox111": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
