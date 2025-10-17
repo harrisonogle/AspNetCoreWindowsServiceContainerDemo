@@ -9,6 +9,9 @@
 .PARAMETER ServiceName
   The name of the service. This will also be the name of the Windows User.
 
+.PARAMETER ServicePath
+  The path to the service executable.
+
 .EXAMPLE
   .\Create-WindowsService.ps1 -ServiceName "RUALSv2"
   Creates and configures a Windows user account with the given service name.
@@ -22,10 +25,16 @@
 
 param(
     [Parameter(Mandatory=$true)]
-    [string]$ServiceName
+    [string]$ServiceName,
+
+    [Parameter(Mandatory=$true)]
+    [string]$ServicePath
 )
 
 $ErrorActionPreference = "Stop"
+
+Write-Host "ServiceName: '$ServiceName'"
+Write-Host "ServicePath: '$ServicePath'"
 
 if ([string]::IsNullOrEmpty($ServiceName))
 {
@@ -41,8 +50,30 @@ if ($serviceNameRegex.IsMatch($ServiceName) -eq $false)
     exit 1
 }
 
+if ([string]::IsNullOrEmpty($ServicePath))
+{
+    Write-Host "Null or empty 'ServicePath' parameter."
+    exit 1
+}
+
+if ([System.IO.File]::Exists($ServicePath) -ne $true)
+{
+    Write-Host "Service not found at: '$ServicePath'"
+    exit 1
+}
+
+$serviceDirectory = [System.IO.Path]::GetDirectoryName($ServicePath)
+
+if ([System.IO.Directory]::Exists($serviceDirectory) -ne $true)
+{
+    Write-Host "Service directory not found at: '$serviceDirectory'"
+    exit 1
+}
+
+# Create the Windows user.
 Write-Host "Creating Windows user with name: '$ServiceName'"
-$user = New-LocalUser -Name "$ServiceName" -NoPassword -AccountNeverExpires -FullName "$ServiceName" -Description "$ServiceName"
+$password = ConvertTo-SecureString "password" -AsPlainText -Force
+$user = New-LocalUser -Name "$ServiceName" -Password $password -AccountNeverExpires -FullName "$ServiceName" -Description "$ServiceName"
 Write-Host "Created new user: $user"
 
 Write-Host "Searching for user '$ServiceName'."
@@ -60,8 +91,49 @@ else
     [System.String]::Join("`n", $found) | Write-Host
 }
 
+# Give the user "logon as a service" permissions so it can do network stuff.
 Write-Host "Adding `"logon as a service`" permission to user '$ServiceName'."
 & ".\Add-ServiceLogonRight.ps1" -User "$ServiceName"
 Write-Host "Added `"logon as a service`" permission to user '$ServiceName'."
 
-# TODO: ACL the service executable, then call `New-Service` to create the Windows service.
+# ACL the service executable to the file system.
+Write-Host "ACL'ing the service executable to the file system."
+$acl = Get-Acl "$ServicePath"
+# $aclRuleArgs = "$ServiceName", "Read,Write,ReadAndExecute", "ContainerInherit,ObjectInherit", "None", "Allow"
+$aclRuleArgs = "$ServiceName", "Read,Write,ReadAndExecute", "None", "None", "Allow"
+$accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule($aclRuleArgs)
+do
+{
+    $attempt = 0
+    $check = 'ok'
+    try
+    {
+        $acl.SetAccessRule($accessRule)
+    }
+    catch [System.Management.Automation.RuntimeException]
+    {
+        $_.Exception.Message
+        $check = 'error'
+        Start-Sleep -Seconds 2
+        $attempt = $attempt + 1
+
+        if ($attempt -ge 5)
+        {
+            Write-Host "Error setting filesystem ACL."
+            Write-Host $_
+            exit 1
+        }
+    }
+} until (
+    $check -eq 'ok'
+)
+# $acl.SetAccessRule($accessRule)
+$acl | Set-Acl "$ServicePath"
+Write-Host "ACL'ed the service executable to the file system."
+
+# Create the Windows service.
+Write-Host "Creating Windows service."
+$serviceCredential = [System.Management.Automation.PSCredential]::new($ServiceName, $password)
+New-Service -Name "$ServiceName" -BinaryPathName "$ServicePath --contentRoot $serviceDirectory" -Credential $serviceCredential -Description "$ServiceName" -DisplayName "$ServiceName" -StartupType Automatic
+# New-Service -Name "$ServiceName" -BinaryPathName "$ServicePath --contentRoot $serviceDirectory" -Credential "$ServiceName" -Description "$ServiceName" -DisplayName "$ServiceName" -StartupType Automatic
+Write-Host "Created Windows service."

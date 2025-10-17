@@ -23,13 +23,13 @@ RUN dotnet build "./dirs.proj" -c %BUILD_CONFIGURATION%
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./dirs.proj" -c %BUILD_CONFIGURATION% /p:UseAppHost=false
+#RUN dotnet publish "./dirs.proj" -c %BUILD_CONFIGURATION% /p:UseAppHost=false
+RUN dotnet publish "./dirs.proj" -c %BUILD_CONFIGURATION%
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /src/artifacts/publish .
-RUN dir
 ARG BUILD_CONFIGURATION=Release
 ENV BUILD_CONFIGURATION=${BUILD_CONFIGURATION}
 ENTRYPOINT ["dotnet", "Sandbox111/out/Sandbox111.dll"]
