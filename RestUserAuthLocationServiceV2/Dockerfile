@@ -4,32 +4,29 @@
 # For more information, please see https://aka.ms/containercompat
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-windowsservercore-ltsc2025 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-1809 AS base
 WORKDIR /app
+EXPOSE 8080
+EXPOSE 8081
+
 
 # This stage is used to build the service project
-FROM mcr.microsoft.com/dotnet/sdk:8.0-windowsservercore-ltsc2025 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-nanoserver-1809 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Sandbox111/Sandbox111.csproj", "Sandbox111/"]
 COPY ["RestUserAuthLocationServiceV2/RestUserAuthLocationServiceV2.csproj", "RestUserAuthLocationServiceV2/"]
-COPY dirs.proj .
-COPY global.json .
-COPY Directory.Build.props .
-RUN dotnet restore "./dirs.proj"
+RUN dotnet restore "./RestUserAuthLocationServiceV2/RestUserAuthLocationServiceV2.csproj"
 COPY . .
-RUN dotnet build "./dirs.proj" -c %BUILD_CONFIGURATION%
+WORKDIR "/src/RestUserAuthLocationServiceV2"
+RUN dotnet build "./RestUserAuthLocationServiceV2.csproj" -c %BUILD_CONFIGURATION% -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./dirs.proj" -c %BUILD_CONFIGURATION% /p:UseAppHost=false
+RUN dotnet publish "./RestUserAuthLocationServiceV2.csproj" -c %BUILD_CONFIGURATION% -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /src/artifacts/publish .
-RUN dir
-ARG BUILD_CONFIGURATION=Release
-ENV BUILD_CONFIGURATION=${BUILD_CONFIGURATION}
-ENTRYPOINT ["dotnet", "Sandbox111/out/Sandbox111.dll"]
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "RestUserAuthLocationServiceV2.dll"]
