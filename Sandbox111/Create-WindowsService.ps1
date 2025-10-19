@@ -72,7 +72,7 @@ if ([System.IO.Directory]::Exists($serviceDirectory) -ne $true)
 
 # Create the Windows user.
 Write-Host "Creating Windows user with name: '$ServiceName'"
-$password = ConvertTo-SecureString "password" -AsPlainText -Force
+$password = ConvertTo-SecureString -String (-join ((33..126) | Get-Random -Count 32 | % {[char]$_})) -AsPlainText -Force
 $user = New-LocalUser -Name "$ServiceName" -Password $password -AccountNeverExpires -FullName "$ServiceName" -Description "$ServiceName"
 Write-Host "Created new user: $user"
 
@@ -93,7 +93,7 @@ else
 
 # Give the user "logon as a service" permissions so it can do network stuff.
 Write-Host "Adding `"logon as a service`" permission to user '$ServiceName'."
-& ".\Add-ServiceLogonRight.ps1" -User "$ServiceName"
+& ".\Add-ServiceLogonRight.ps1" "$ServiceName"
 Write-Host "Added `"logon as a service`" permission to user '$ServiceName'."
 
 # ACL the service executable to the file system.
@@ -133,7 +133,7 @@ Write-Host "ACL'ed the service executable to the file system."
 
 # Create the Windows service.
 Write-Host "Creating Windows service."
-$serviceCredential = [System.Management.Automation.PSCredential]::new($ServiceName, $password)
-New-Service -Name "$ServiceName" -BinaryPathName "$ServicePath --contentRoot $serviceDirectory" -Credential $serviceCredential -Description "$ServiceName" -DisplayName "$ServiceName" -StartupType Automatic
+$serviceCredential = [System.Management.Automation.PSCredential]::new(".\$ServiceName", $password)
+New-Service -Name "$ServiceName" -BinaryPathName "$ServicePath --contentRoot $serviceDirectory" -Credential $serviceCredential -Description "$ServiceName" -DisplayName "$ServiceName" -StartupType Manual
 # New-Service -Name "$ServiceName" -BinaryPathName "$ServicePath --contentRoot $serviceDirectory" -Credential "$ServiceName" -Description "$ServiceName" -DisplayName "$ServiceName" -StartupType Automatic
 Write-Host "Created Windows service."

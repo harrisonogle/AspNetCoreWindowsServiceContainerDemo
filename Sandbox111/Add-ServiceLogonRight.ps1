@@ -31,6 +31,8 @@ param (
     $UserOrGroup
 )
 
+Write-Host "Adding service logon permission to user or group '$UserOrGroup'."
+
 try
 {
     # Check if the user account exists.
