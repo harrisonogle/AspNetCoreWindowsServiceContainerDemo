@@ -31,3 +31,9 @@ Also see the [section on Windows services](https://learn.microsoft.com/en-us/vir
     1. `build.cmd` to build the docker container
     2. `run.cmd` to run the docker container
     3. `exec.cmd` (optionally) to execute commands within the running container
+- The service is exposed on the host machine on port 5000. Try the endpoints:
+    - `http://localhost:5000/`
+    - `http://localhost:5000/user`
+
+The `GET /user` endpoint displays the Windows identity the service is running under,
+and whether or not it is an administrator.
