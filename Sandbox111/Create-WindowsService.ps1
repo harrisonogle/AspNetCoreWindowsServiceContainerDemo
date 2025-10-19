@@ -93,7 +93,9 @@ else
 
 # Give the user "logon as a service" permissions so it can do network stuff.
 Write-Host "Adding `"logon as a service`" permission to user '$Name'."
-& ".\Add-ServiceLogonRight.ps1" "$Name"
+$addServiceLogonRightScript = [System.IO.Path]::Combine($PSScriptRoot, "Add-ServiceLogonRight.ps1")
+Write-Host "Invoking script: $addServiceLogonRightScript '$Name'"
+& "$addServiceLogonRightScript" "$Name"
 Write-Host "Added `"logon as a service`" permission to user '$Name'."
 
 # ACL the service executable to the file system.
@@ -108,5 +110,5 @@ Write-Host "ACL'ed the service executable to the file system."
 # Create the Windows service.
 Write-Host "Creating Windows service."
 $serviceCredential = [System.Management.Automation.PSCredential]::new(".\$Name", $password)
-New-Service -Name "$Name" -BinaryPathName "$Path --contentRoot $serviceDirectory" -Credential $serviceCredential -Description "$Name" -DisplayName "$Name" -StartupType Manual
+New-Service -Name "$Name" -BinaryPathName "$Path --contentRoot $serviceDirectory" -Credential $serviceCredential -Description "$Name" -DisplayName "$Name" -StartupType Automatic
 Write-Host "Created Windows service."

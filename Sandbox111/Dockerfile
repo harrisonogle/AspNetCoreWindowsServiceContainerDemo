@@ -6,6 +6,10 @@
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-windowsservercore-ltsc2025 AS base
 WORKDIR /app
+EXPOSE 8080
+EXPOSE 8081
+ENV ASPNETCORE_HTTP_PORTS=8080
+ENV ASPNETCORE_HTTPS_PORTS=8081
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0-windowsservercore-ltsc2025 AS build
@@ -30,6 +34,5 @@ RUN dotnet publish "./dirs.proj" -c %BUILD_CONFIGURATION%
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /src/artifacts/publish .
-ARG BUILD_CONFIGURATION=Release
-ENV BUILD_CONFIGURATION=${BUILD_CONFIGURATION}
+RUN powershell -Command ./Sandbox111/out/Create-WindowsService.ps1 -Name RUALSv2 -Path /app/RestUserAuthLocationServiceV2/out/RestUserAuthLocationServiceV2.exe
 ENTRYPOINT ["dotnet", "Sandbox111/out/Sandbox111.dll"]
