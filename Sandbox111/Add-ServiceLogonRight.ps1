@@ -10,11 +10,11 @@
   It allows certain users to run Windows network services whether they are logged
   on locally or not.
 
-.PARAMETER User
+.PARAMETER 0
   The name of the Windows user.
 
 .EXAMPLE
-  .\Add-ServiceLogonRight.ps1 -User "RUALSv2"
+  .\Add-ServiceLogonRight.ps1 "RUALSv2"
   Configures the Windows user to have service logon permission.
 
 .INPUTS

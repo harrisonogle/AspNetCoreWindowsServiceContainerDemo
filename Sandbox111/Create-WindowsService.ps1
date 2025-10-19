@@ -13,7 +13,7 @@
   The path to the service executable.
 
 .EXAMPLE
-  .\Create-WindowsService.ps1 -Name "RUALSv2"
+  .\Create-WindowsService.ps1 -Name "RUALSv2" -Path "/path/to/rualsv2.exe"
   Creates and configures a Windows user account with the given service name.
 
 .INPUTS
