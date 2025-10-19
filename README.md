@@ -21,3 +21,13 @@ Also see the [section on Windows services](https://learn.microsoft.com/en-us/vir
 > When containerizing and securing a workload that runs as a Windows service there are a few additional considerations to be aware of. First, the ENTRYPOINT of the container is not going to be the workload since the service runs as a background process, typically the ENTRYPOINT will be a tool like service monitor) or log monitor). Second, the security account that the workload operates under will be configured by the service not by the USER directive in the dockerfile. You can check what account the service will run under by running Get-WmiObject win32_service -filter "name='<servicename>'" | Format-List StartName.
 > 
 > For example, when hosting an IIS web application using the ASP.NET (Microsoft Artifact Registry) image the ENTRYPOINT of the container is "C:\\ServiceMonitor.exe", "w3svc". This tool can be used to configure the IIS service and then monitors the service to ensure that it remains running and exits, thus stopping the container, if the service stops for any reason. By default, the IIS service and thus the web application run under a low privilege account within the container, but the service monitor tool requires administrative privileges to configure and monitor the service.
+
+# Running the demo
+
+- Clone the repo.
+- Open a new DOS terminal. (cmd.exe)
+- `cd` into the directory containing `Sandbox111.csproj`
+- Run the following commands
+    1. `build.cmd` to build the docker container
+    2. `run.cmd` to run the docker container
+    3. `exec.cmd` (optionally) to execute commands within the running container
