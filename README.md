@@ -26,7 +26,7 @@ Also see the [section on Windows services](https://learn.microsoft.com/en-us/vir
 
 - Clone the repo.
 - Open a new DOS terminal. (cmd.exe)
-- `cd` into the directory containing `Sandbox111.csproj`
+- `cd` into the directory containing `Entrypoint.csproj`
 - Run the following commands
     1. `build.cmd` to build the docker container
     2. `run.cmd` to run the docker container

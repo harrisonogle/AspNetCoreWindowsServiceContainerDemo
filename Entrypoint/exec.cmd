@@ -1,4 +1,4 @@
 @ECHO OFF
 setlocal enabledelayedexpansion
 
-docker exec -it sandbox111 powershell
+docker exec -it entrypoint powershell

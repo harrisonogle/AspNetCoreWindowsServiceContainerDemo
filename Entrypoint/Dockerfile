@@ -12,7 +12,7 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:8.0-windowsservercore-ltsc2025 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Sandbox111/Sandbox111.csproj", "Sandbox111/"]
+COPY ["Entrypoint/Entrypoint.csproj", "Entrypoint/"]
 COPY ["RestUserAuthLocationServiceV2/RestUserAuthLocationServiceV2.csproj", "RestUserAuthLocationServiceV2/"]
 COPY dirs.proj .
 COPY global.json .
@@ -31,5 +31,5 @@ RUN dotnet publish "./dirs.proj" -c %BUILD_CONFIGURATION%
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /src/artifacts/publish .
-RUN powershell -Command ./Sandbox111/out/Create-WindowsService.ps1 -Name RUALSv2 -Path /app/RestUserAuthLocationServiceV2/out/RestUserAuthLocationServiceV2.exe
-ENTRYPOINT ["dotnet", "Sandbox111/out/Sandbox111.dll"]
+RUN powershell -Command ./Entrypoint/out/Create-WindowsService.ps1 -Name RUALSv2 -Path /app/RestUserAuthLocationServiceV2/out/RestUserAuthLocationServiceV2.exe
+ENTRYPOINT ["dotnet", "Entrypoint/out/Entrypoint.dll"]

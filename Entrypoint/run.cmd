@@ -1,7 +1,7 @@
 @ECHO OFF
 setlocal enabledelayedexpansion
 
-set CONTAINER_NAME=sandbox111
+set CONTAINER_NAME=entrypoint
 
 REM Check if the container exists (running or stopped)
 docker ps -a --filter "name=%CONTAINER_NAME%" --format "{{.ID}}" > NUL 2>&1

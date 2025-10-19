@@ -5,9 +5,9 @@ PUSHD "%~dp0"
 cd ..
 
 docker.exe build ^
-    -f ".\Sandbox111\Dockerfile" ^
+    -f ".\Entrypoint\Dockerfile" ^
     --force-rm ^
-    -t sandbox111:dev ^
+    -t entrypoint:dev ^
     --build-arg "BUILD_CONFIGURATION=Debug" ^
     .
 

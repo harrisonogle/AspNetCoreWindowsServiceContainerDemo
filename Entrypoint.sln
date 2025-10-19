@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36603.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox111", "Sandbox111\Sandbox111.csproj", "{CBDAAC5C-AF74-426A-838F-AB477B5C6FD5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entrypoint", "Entrypoint\Entrypoint.csproj", "{CBDAAC5C-AF74-426A-838F-AB477B5C6FD5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestUserAuthLocationServiceV2", "RestUserAuthLocationServiceV2\RestUserAuthLocationServiceV2.csproj", "{EC1D956B-6CB1-4BF4-9E9F-08DEDF18749B}"
 EndProject

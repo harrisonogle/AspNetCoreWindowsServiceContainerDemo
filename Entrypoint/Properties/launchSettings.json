@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Sandbox111": {
+    "Entrypoint": {
       "commandName": "Project"
     },
     "Container (Dockerfile)": {
