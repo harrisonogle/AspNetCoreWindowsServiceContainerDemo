@@ -7,9 +7,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-windowsservercore-ltsc2025 AS base
 WORKDIR /app
 EXPOSE 8080
-EXPOSE 8081
-ENV ASPNETCORE_HTTP_PORTS=8080
-ENV ASPNETCORE_HTTPS_PORTS=8081
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0-windowsservercore-ltsc2025 AS build
