@@ -19,12 +19,14 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+    <PackageReference Include="Microsoft.Bcl.Cryptography" Version="9.0.7" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Add-ServiceLogonRight.ps1" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Create-WindowsService.ps1" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="certificate.pfx" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

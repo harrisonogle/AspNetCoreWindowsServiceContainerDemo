@@ -1,6 +1,7 @@
 using NReco.Logging.File;
 using RestUserAuthLocationServiceV2;
 using System.Diagnostics;
+using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 
 string logPath;
@@ -49,6 +50,20 @@ try
                 IsAdmin = isAdmin,
             };
         }
+    });
+    app.MapGet("/cert", static () =>
+    {
+        using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+        store.Open(OpenFlags.ReadOnly);
+        foreach (X509Certificate2 certificate in store.Certificates)
+        {
+            if (certificate.Subject?.Contains("Intune") is true)
+            {
+                return Results.Text(certificate.ToString(), "text/plain", statusCode: 200);
+            }
+        }
+        store.Close();
+        return Results.NotFound("Certificate not found.");
     });
 
     app.Run();
